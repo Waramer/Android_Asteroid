@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
+
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         float POSITION_INIT_FOND_JOYSTICK_Y = (float) (hauteurEcran/1.47);  //on centre le fond joystick en bas
         float POSITION_INIT_OBJET_JOYSTICK_X = (float) (largeurEcran/2.6);   //on centre le joystick au milieu
         float POSITION_INIT_OBJET_JOYSTICK_Y = (float) (hauteurEcran/1.4);  //on centre le joystick en bas
-        //float DISTANCE_JOYSTICK_ACCEPTED = 100.0;
+        float DISTANCE_JOYSTICK_ACCEPTED = 250;
         joystick.setX(POSITION_INIT_OBJET_JOYSTICK_X);
         joystick.setY(POSITION_INIT_OBJET_JOYSTICK_Y );
         fond_joystick.setX(POSITION_INIT_FOND_JOYSTICK_X);
@@ -63,14 +65,19 @@ public class MainActivity extends AppCompatActivity {
                     public boolean canMoveJoystick(MotionEvent motionEvent){
                         int posX = getPosTouchX(motionEvent);
                         int posY = getPosTouchY(motionEvent);
-                        double distanceJoystickDoigt = Math.sqrt(Math.pow(posY - POSITION_INIT_OBJET_JOYSTICK_Y,2) + Math.pow(posX - POSITION_INIT_OBJET_JOYSTICK_X,2));
-
-                        /*if (distanceJoystickDoigt <= DISTANCE_JOYSTICK_ACCEPTED) {
+                        float posJoyY = POSITION_INIT_OBJET_JOYSTICK_Y + 400;// + 495;
+                        float posJoyX = POSITION_INIT_OBJET_JOYSTICK_X + 160;// + 182;
+                        double distanceJoystickDoigt = Math.sqrt(Math.pow(posY - posJoyY,2) + Math.pow(posX - posJoyX,2));
+                        /* String tmp = "\nXtouch = " + posX + "| Xjoystick = " + posJoyX;
+                        * tmp = tmp + "\n" + "Ytouch = " + posY + " | Yjoystick = " + posJoyY;
+                        * Log.i("INFO coord tmp", tmp);
+                        * Log.i("INFO distance =", String.valueOf(distanceJoystickDoigt));
+                        */
+                        if (distanceJoystickDoigt <= DISTANCE_JOYSTICK_ACCEPTED) {
                                 return true;
                         }else{
                             return false;
-                        }*/
-                        return true;
+                        }
                     }
                     public void setPosInit(){
                         joystick.setX(POSITION_INIT_OBJET_JOYSTICK_X);
