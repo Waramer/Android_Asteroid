@@ -21,4 +21,12 @@
         app:srcCompat="@drawable/pad_center"
         tools:layout_editor_absoluteX="160dp"
         tools:layout_editor_absoluteY="556dp" />
+
+    <ImageView
+        android:id="@+id/tie"
+        android:layout_width="90dp"
+        android:layout_height="55dp"
+        app:srcCompat="@drawable/tie"
+        tools:layout_editor_absoluteX="187dp"
+        tools:layout_editor_absoluteY="105dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
