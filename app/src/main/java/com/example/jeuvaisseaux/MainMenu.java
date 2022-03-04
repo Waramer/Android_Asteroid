@@ -14,11 +14,20 @@ public class MainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        Button button_play = findViewById(R.id.button_play);
-        button_play.setOnClickListener(new View.OnClickListener() {
+        Button button_play_Joy = findViewById(R.id.button_play_joy);
+        button_play_Joy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent startGame = new Intent(MainMenu.this, MainGame.class);
+                Intent startGame = new Intent(MainMenu.this, MainGameJoy.class);
+                startActivity(startGame);
+            }
+        });
+
+        Button button_play_Acc = findViewById(R.id.button_play_acc);
+        button_play_Acc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startGame = new Intent(MainMenu.this, MainGameAcc.class);
                 startActivity(startGame);
             }
         });

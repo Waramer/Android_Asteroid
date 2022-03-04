@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainGame">
+    tools:context=".MainGameJoy">
 
     <ImageView
         android:id="@+id/background_game"
@@ -31,13 +31,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/fond_joystick"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            app:srcCompat="@drawable/pad_exterior" />
 
         <ImageView
             android:id="@+id/asteroid1"
@@ -76,14 +69,6 @@
 
     </FrameLayout>
 
-
-    <ImageView
-        android:id="@+id/objet_joystick"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/pad_center"
-        tools:layout_editor_absoluteX="160dp"
-        tools:layout_editor_absoluteY="556dp" />
 
     <ImageView
         android:id="@+id/tie"

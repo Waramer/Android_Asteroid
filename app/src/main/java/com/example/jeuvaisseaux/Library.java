@@ -4,6 +4,64 @@ import android.widget.ImageView;
 
 //La librairie contient les définitions du joystick et du vaisseau.
 
+final class Accelerometer{
+    private float xActuel;
+    private float yActuel;
+    private float decalageX;
+    private float decalageY;
+    private boolean initMode;
+
+    public Accelerometer() {
+        this.xActuel = 0;
+        this.yActuel = 0;
+        this.decalageX = 0;
+        this.decalageY = 0;
+        this.initMode = true;
+    }
+
+    public boolean isInitMode() {
+        return initMode;
+    }
+
+    public void setInitMode(boolean initMode) {
+        this.initMode = initMode;
+    }
+
+    public float getDecalageX() {
+        return decalageX;
+    }
+
+    public void setDecalageX(float decalageX) {
+        this.decalageX = decalageX;
+    }
+
+    public float getDecalageY() {
+        return decalageY;
+    }
+
+    public void setDecalageY(float decalageY) {
+        this.decalageY = decalageY;
+    }
+
+
+    public float getxActuel() {
+        return xActuel;
+    }
+
+    public void setxActuel(float xActuel) {
+        this.xActuel = xActuel;
+    }
+
+    public float getyActuel() {
+        return yActuel;
+    }
+
+    public void setyActuel(float yActuel) {
+        this.yActuel = yActuel;
+    }
+}
+
+
 final class Joystick{
     private ImageView joystickImg;
     private boolean isPressed;

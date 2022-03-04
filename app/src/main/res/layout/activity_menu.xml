@@ -45,21 +45,36 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="202dp"
+            android:layout_height="354dp"
             android:layout_gravity="center"
             android:gravity="center"
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/button_play"
+                android:id="@+id/button_play_joy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#30FFFFFF"
                 android:fontFamily="casual"
                 android:includeFontPadding="false"
-                android:text="JOUER"
+                android:text="JOUER (Joystick)"
+                android:textAlignment="center"
                 android:textColor="#FFFFFFFF"
-                android:textSize="34sp"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:cornerRadius="25dp" />
+
+            <Button
+                android:id="@+id/button_play_acc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#30FFFFFF"
+                android:fontFamily="casual"
+                android:includeFontPadding="false"
+                android:text="JOUER (Accéléromètre)"
+                android:textAlignment="center"
+                android:textColor="#FFFFFFFF"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 app:cornerRadius="25dp" />
 
@@ -71,8 +86,9 @@
                 android:fontFamily="casual"
                 android:includeFontPadding="false"
                 android:text="QUITTER"
+                android:textAlignment="center"
                 android:textColor="#FFFFFFFF"
-                android:textSize="34sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 app:cornerRadius="25dp" />
         </LinearLayout>
