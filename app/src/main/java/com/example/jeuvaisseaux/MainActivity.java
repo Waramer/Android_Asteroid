@@ -2,6 +2,7 @@ package com.example.jeuvaisseaux;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.graphics.Point;
 import android.os.Bundle;
 
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     Tie tieObject = new Tie();
     Joystick joystickObject = new Joystick();
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,8 +77,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         joystickImg.setOnTouchListener(
+
                 new OnTouchListener() {
-                    Boolean joystickIsPressed = false;
+
 
                     public void setPosInit(){
                         joystickObject.setPositionX((float)(largeurEcran/2.6));
@@ -105,36 +108,27 @@ public class MainActivity extends AppCompatActivity {
                         int posY = getPosTouchY(motionEvent);
                         float posJoyX = 550;
                         float posJoyY = 1947;
-                        //float posJoyY = joystickObject.getPositionY() + 400;
-                        //float posJoyX = joystickObject.getPositionX() + 160;
-                        //float posJoyY = POSITION_OBJET_JOYSTICK_Y + 400;// + 495;
-                        //float posJoyX = POSITION_OBJET_JOYSTICK_X + 160;// + 182;
                         double distanceJoystickDoigt = Math.sqrt(Math.pow(posY - posJoyY,2) + Math.pow(posX - posJoyX,2));
-                        //String tmp = "\nXtouch = " + posX + "| Xjoystick = " + posJoyX;
-                        //tmp = tmp + "\n" + "Ytouch = " + posY + " | Yjoystick = " + posJoyY;
-                        //Log.i("INFO coord tmp", tmp);
                         //Log.i("INFO distance =", String.valueOf(distanceJoystickDoigt));
 
-                        if (distanceJoystickDoigt <= DISTANCE_JOYSTICK_ACCEPTED) {
-                                return true;
-                        }else{
-                            return false;
-                        }
+                        return distanceJoystickDoigt <= DISTANCE_JOYSTICK_ACCEPTED;
                     }
 
                     public void updateTiePos(MotionEvent motionEvent){
                         // en cours de dev
-                        //if ((tieObject.getPositionX() > tieObject.getXmin()) && (tieObject.getPositionX() < tieObject.getXmax())){
-                            //Log.i("debug update tie x", String.valueOf(tieObject.getPositionX() > tieObject.getXmin()));
-
-                            //if ((tieObject.getPositionY() > tieObject.getYmin()) && (tieObject.getPositionY() < tieObject.getYmax())){
-                                tieObject.setPositionX(tieObject.getPositionX() + (float)(getPosTouchX(motionEvent) - largeurEcran/2)/10);
-                                tieObject.setPositionY(tieObject.getPositionY() + (float)(getPosTouchY(motionEvent) - hauteurEcran/1.08)/10);
-                            //}
-                        //}
+                        float nvelleValeurX = tieObject.getPositionX() + (float) (getPosTouchX(motionEvent) - largeurEcran / 2) / 10;
+                        float nvelleValeurY = tieObject.getPositionY() + (float) (getPosTouchY(motionEvent) - hauteurEcran / 1.08) / 10;
+                        boolean estDansIntervalleX = (nvelleValeurX > tieObject.getXmin()) && (nvelleValeurX < tieObject.getXmax());
+                        boolean estDansIntervalleY = (nvelleValeurY > tieObject.getYmin()) && (nvelleValeurY < tieObject.getYmax());
+                        if (estDansIntervalleX && estDansIntervalleY) {
+                            Log.i("DEBUG", "Dans intervalle X et Y défini");
+                            tieObject.setPositionX(nvelleValeurX);
+                            tieObject.setPositionY(nvelleValeurY);
+                        }else{
+                            Log.i("DEBUG","Update apppelé mais hors intervalle X et Y");
+                        }
 
                     }
-
 
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -146,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case MotionEvent.ACTION_MOVE:
                                 Log.i("DEPLACEMENT","déplacement du doigt");
-                                if (canMoveJoystick(motionEvent) == true) {
+                                if (canMoveJoystick(motionEvent)) {
                                     majJoystick(getPosTouchX(motionEvent), getPosTouchY(motionEvent));
                                     updateTiePos(motionEvent);
                                 }
@@ -177,32 +171,18 @@ public class MainActivity extends AppCompatActivity {
 
 final class Joystick{
     private ImageView joystickImg;
-    private float positionX;
     private float positionY;
     private boolean isPressed;
-    private float distanceMax;
+    private final float distanceMax;
 
     Joystick(){
-        this.positionX = 0;
         this.positionY = 0;
         this.isPressed = false;
         distanceMax = 250;
     }
-    public float getPositionX() {
-        return positionX;
-    }
-
-    public float getDistanceMax(){
-        return distanceMax;
-    }
 
     public void setPositionX(float positionX) {
-        this.positionX = positionX;
         joystickImg.setX(positionX);
-    }
-
-    public float getPositionY() {
-        return positionY;
     }
 
     public void setPositionY(float positionY) {
@@ -218,10 +198,6 @@ final class Joystick{
         isPressed = pressed;
     }
 
-    public ImageView getJoystickImg() {
-        return joystickImg;
-    }
-
     public void setJoystickImg(ImageView joystickImg) {
         this.joystickImg = joystickImg;
     }
@@ -231,7 +207,7 @@ final class Tie{
     private ImageView tieImage;
     private float positionX;
     private float positionY;
-    private float xmin;
+    private float xmin;  //sera utilisé par la suite
     private float xmax;
     private float ymin;
     private float ymax;
@@ -241,10 +217,10 @@ final class Tie{
     Tie(){
         this.positionX = 0;
         this.positionY = 0;
-        this.xmin = 17;
-        this.xmax = 1300;
-        this.ymin = 16;
-        this.ymax = 790;
+        this.xmin = 0;
+        this.xmax = 790;
+        this.ymin = 0;
+        this.ymax = 1280;
     }
 
     public float getXmin() {
@@ -295,10 +271,6 @@ final class Tie{
     public void setPositionY(float positionY) {
         this.positionY = positionY;
         tieImage.setY(positionY);
-    }
-
-    public ImageView getTieImage() {
-        return tieImage;
     }
 
     public void setTieImage(ImageView tieImage) {
