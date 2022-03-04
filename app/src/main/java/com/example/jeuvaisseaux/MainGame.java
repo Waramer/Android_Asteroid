@@ -12,11 +12,19 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.Chronometer;
+
+import android.animation.ObjectAnimator;
+import android.graphics.Path;
+import android.graphics.Point;
+import android.graphics.Rect;
 
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainGame extends AppCompatActivity {
 
     //on définie les objets
     Tie tieObject = new Tie();
@@ -66,6 +74,55 @@ public class MainActivity extends AppCompatActivity {
         fondJoystickImg.setX(POSITION_fondJoystickImg_X);
         fondJoystickImg.setY(POSITION_fondJoystickImg_Y);
 
+        //le chronomètre
+        Chronometer simpleChronometer = (Chronometer) findViewById(R.id.simpleChronometer);
+        simpleChronometer.start();
+
+        // les astéroides
+        ImageView asteroid1 = (ImageView) findViewById(R.id.asteroid1);
+        Path path1 = new Path();
+        path1.moveTo(-100,-1000);
+        path1.lineTo((float)largeurEcran/2,(float)hauteurEcran+50);
+        ObjectAnimator anim1 = ObjectAnimator.ofFloat(asteroid1, View.X,View.Y,path1);
+        anim1.setInterpolator(new LinearInterpolator());
+        anim1.setDuration(4000);
+        anim1.setRepeatCount(Animation.INFINITE);
+        anim1.start();
+
+        ImageView asteroid2 = (ImageView) findViewById(R.id.asteroid2);
+        Path path2 = new Path();
+        path2.moveTo((float)largeurEcran,(float)1/3*hauteurEcran);
+        path2.lineTo(-200,(float)hauteurEcran);
+        ObjectAnimator anim2 = ObjectAnimator.ofFloat(asteroid2, View.X,View.Y,path2);
+        anim2.setInterpolator(new LinearInterpolator());
+        anim2.setDuration(3000);
+        anim2.setRepeatCount(Animation.INFINITE);
+        anim2.start();
+
+        ImageView asteroid3 = (ImageView) findViewById(R.id.asteroid3);
+        Path path3 = new Path();
+        path3.moveTo((float)-400,(float)hauteurEcran*1/4);
+        path3.lineTo((float)largeurEcran+200, (float)hauteurEcran*4/5);
+        ObjectAnimator anim3 = ObjectAnimator.ofFloat(asteroid3, View.X,View.Y,path3);
+        anim3.setInterpolator(new LinearInterpolator());
+        anim3.setDuration(6000);
+        anim3.setRepeatCount(Animation.INFINITE);
+        anim3.start();
+
+        ImageView asteroid4 = (ImageView) findViewById(R.id.asteroid4);
+        Path path4 = new Path();
+        path4.moveTo((float)largeurEcran*1,(float)hauteurEcran*1);
+        path4.lineTo((float)(largeurEcran*0.2),-400);
+        ObjectAnimator anim4 = ObjectAnimator.ofFloat(asteroid4, View.X,View.Y,path4);
+        anim4.setInterpolator(new LinearInterpolator());
+        anim4.setDuration(5000);
+        anim4.setRepeatCount(Animation.INFINITE);
+        anim4.start();
+
+        // les collisions
+        ImageView explosion = (ImageView) findViewById(R.id.explosion);
+        explosion.setX(-300f); // Image hors champ
+        explosion.setY(-300f); // Image hors champ
 
         String debugMsg = "Position TIE : \n x = " + POSITION_TIE_X + "\n y = " + POSITION_TIE_Y;
         Log.i("MAJ",debugMsg);
@@ -81,6 +138,38 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         movingTie.run();
+
+        //on initialise le thread des collisions
+        Handler handler = new Handler();
+
+        Runnable r = new Runnable() {
+            public void run() {
+                if(enCollision(asteroid1,tieObject.getTieImage())){
+                    explosion.setX(tieObject.getPositionX());
+                    explosion.setY(tieObject.getPositionY());
+                }
+                else if (enCollision(asteroid2,tieObject.getTieImage())){
+                    explosion.setX(tieObject.getPositionX());
+                    explosion.setY(tieObject.getPositionY());
+                }
+                else if (enCollision(asteroid3, tieObject.getTieImage())){
+                    explosion.setX(tieObject.getPositionX());
+                    explosion.setY(tieObject.getPositionY())    ;
+                }
+                else if (enCollision(asteroid4, tieObject.getTieImage())){
+                    explosion.setX(tieObject.getPositionX());
+                    explosion.setY(tieObject.getPositionY());
+                }
+                else{
+                    explosion.setX(-300f); // Image hors champ
+                    explosion.setY(-300f); // Image hors champ
+
+                }
+                handler.postDelayed(this, 100);
+            }
+        };
+
+        handler.postDelayed(r, 100);
 
         joystickImg.setOnTouchListener(
 
@@ -167,120 +256,27 @@ public class MainActivity extends AppCompatActivity {
 
         );
 
+    }
 
-
-
+    boolean enCollision(ImageView img1, ImageView img2) {
+        int[] firstPosition = new int[2];
+        int [] secondPosition = new int[2];
+        img1 .getLocationOnScreen(firstPosition);
+        img2.getLocationOnScreen(secondPosition);
+        Rect rectImg1 = new Rect(firstPosition [0], firstPosition [1], firstPosition [0] + img1.getMeasuredWidth(), firstPosition [1] + img1.getMeasuredHeight());
+        Rect rectImg2= new Rect(secondPosition[0], secondPosition[1], secondPosition[0] + img2.getMeasuredWidth(), secondPosition[1] + img2.getMeasuredHeight());
+        boolean intersect = rectImg1.intersect(rectImg2);
+        if (intersect){
+            float deltaLR = 50;
+            if ((rectImg1.right > rectImg2.left + deltaLR)||(rectImg2.right > rectImg1.left + deltaLR)){
+                float deltaUD = 50;
+                if ((rectImg1.bottom > rectImg2.top + deltaUD)||(rectImg2.bottom > rectImg1.top + deltaUD)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
 
-final class Joystick{
-    private ImageView joystickImg;
-    private boolean isPressed;
-    private final float distanceMax;
-
-    Joystick(){
-        this.isPressed = false;
-        this.distanceMax = 250;
-    }
-
-    public float getDistanceMax() {
-        return distanceMax;
-    }
-
-    public void setPositionX(float positionX) {
-        joystickImg.setX(positionX);
-    }
-
-    public void setPositionY(float positionY) {
-        joystickImg.setY(positionY);
-    }
-
-    public boolean getIsPressed() {
-        return isPressed;
-    }
-
-    public void setIsPressed(boolean pressed) {
-        isPressed = pressed;
-    }
-
-    public void setJoystickImg(ImageView joystickImg) {
-        this.joystickImg = joystickImg;
-    }
-
-}
-final class Tie{
-    private ImageView tieImage;
-    private float positionX;
-    private float positionY;
-    private float xmin;  //sera utilisé par la suite
-    private float xmax;
-    private float ymin;
-    private float ymax;
-
-
-
-    Tie(){
-        this.positionX = 0;
-        this.positionY = 0;
-        this.xmin = 0;
-        this.xmax = 790;
-        this.ymin = 0;
-        this.ymax = 1280;
-    }
-
-    public float getXmin() {
-        return xmin;
-    }
-
-    public void setXmin(float xmin) {
-        this.xmin = xmin;
-    }
-
-    public float getXmax() {
-        return xmax;
-    }
-
-    public void setXmax(float xmax) {
-        this.xmax = xmax;
-    }
-
-    public float getYmin() {
-        return ymin;
-    }
-
-    public void setYmin(float ymin) {
-        this.ymin = ymin;
-    }
-
-    public float getYmax() {
-        return ymax;
-    }
-
-    public void setYmax(float ymax) {
-        this.ymax = ymax;
-    }
-
-    public float getPositionX() {
-        return positionX;
-    }
-
-    public void setPositionX(float positionX) {
-        this.positionX = positionX;
-        tieImage.setX(positionX);
-    }
-
-    public float getPositionY() {
-        return positionY;
-    }
-
-    public void setPositionY(float positionY) {
-        this.positionY = positionY;
-        tieImage.setY(positionY);
-    }
-
-    public void setTieImage(ImageView tieImage) {
-        this.tieImage = tieImage;
-    }
-
-}
