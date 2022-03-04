@@ -27,15 +27,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //déclaration imgview
+        //déclaration des images view
         ImageView joystickImg = (ImageView) findViewById(R.id.objet_joystick);
         ImageView fondJoystickImg = (ImageView) findViewById(R.id.fond_joystick);
         ImageView tieImg = (ImageView) findViewById(R.id.tie);
 
-        tieObject.setTieImage(tieImg);
-        joystickObject.setJoystickImg(joystickImg);
-        //on spécifie la position initiale du joystick
-        //on récupère la taille de l'écran en pixels
+
+        //récupèration de la taille de l'écran en pixels
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -44,23 +42,33 @@ public class MainActivity extends AppCompatActivity {
         String TailleEcran = "Taille Ecran = \n- x : " + largeurEcran + "\n- y : " + hauteurEcran;
         Log.i("Info",TailleEcran);
 
+
+        //définition des propriétés des différents objets
+        //le tie
+        float POSITION_TIE_X = (float)(largeurEcran/2.6);
+        float POSITION_TIE_Y = (float) (hauteurEcran/2.0);
+
+        tieObject.setTieImage(tieImg);
+        tieObject.setPositionX(POSITION_TIE_X);
+        tieObject.setPositionY(POSITION_TIE_Y);
+        tieObject.setYmax((float) (hauteurEcran/1.68));
+        tieObject.setXmax((float) (largeurEcran - 270));
+
+        //le joystick
         float POSITION_fondJoystickImg_X = (float) (largeurEcran/3.15);   //on centre le fond du joystick au milieu
         float POSITION_fondJoystickImg_Y = (float) (hauteurEcran/1.47);  //on centre le fond joystick en bas
         float POSITION_INIT_OBJET_JOYSTICK_X = (float) (largeurEcran/2.6);   //on centre le joystick au milieu
         float POSITION_OBJET_JOYSTICK_Y = (float) (hauteurEcran/1.4);  //on centre le joystick en bas
-        float DISTANCE_JOYSTICK_ACCEPTED = 250;
-        float POSITION_TIE_X = (float)(largeurEcran/2.6);
-        float POSITION_TIE_Y = (float) (hauteurEcran/2.0);
 
-        //on place les différentes objets
-        String debugMsg = "Position TIE : \n x = " + POSITION_TIE_X + "\n y = " + POSITION_TIE_Y;
-        Log.i("MAJ",debugMsg);
-        tieObject.setPositionX(POSITION_TIE_X);
-        tieObject.setPositionY(POSITION_TIE_Y);
+        joystickObject.setJoystickImg(joystickImg);
         joystickObject.setPositionX(POSITION_INIT_OBJET_JOYSTICK_X);
         joystickObject.setPositionY(POSITION_OBJET_JOYSTICK_Y);
         fondJoystickImg.setX(POSITION_fondJoystickImg_X);
         fondJoystickImg.setY(POSITION_fondJoystickImg_Y);
+
+
+        String debugMsg = "Position TIE : \n x = " + POSITION_TIE_X + "\n y = " + POSITION_TIE_Y;
+        Log.i("MAJ",debugMsg);
 
         //on initialise le thread de la MAJ du vaisseau
         Handler handlerForMovingTie = new Handler();
@@ -74,12 +82,9 @@ public class MainActivity extends AppCompatActivity {
         };
         movingTie.run();
 
-
-
         joystickImg.setOnTouchListener(
 
                 new OnTouchListener() {
-
 
                     public void setPosInit(){
                         joystickObject.setPositionX((float)(largeurEcran/2.6));
@@ -111,11 +116,10 @@ public class MainActivity extends AppCompatActivity {
                         double distanceJoystickDoigt = Math.sqrt(Math.pow(posY - posJoyY,2) + Math.pow(posX - posJoyX,2));
                         //Log.i("INFO distance =", String.valueOf(distanceJoystickDoigt));
 
-                        return distanceJoystickDoigt <= DISTANCE_JOYSTICK_ACCEPTED;
+                        return distanceJoystickDoigt <= joystickObject.getDistanceMax();
                     }
 
                     public void updateTiePos(MotionEvent motionEvent){
-                        // en cours de dev
                         float nvelleValeurX = tieObject.getPositionX() + (float) (getPosTouchX(motionEvent) - largeurEcran / 2) / 10;
                         float nvelleValeurY = tieObject.getPositionY() + (float) (getPosTouchY(motionEvent) - hauteurEcran / 1.08) / 10;
                         boolean estDansIntervalleX = (nvelleValeurX > tieObject.getXmin()) && (nvelleValeurX < tieObject.getXmax());
@@ -142,8 +146,9 @@ public class MainActivity extends AppCompatActivity {
                                 Log.i("DEPLACEMENT","déplacement du doigt");
                                 if (canMoveJoystick(motionEvent)) {
                                     majJoystick(getPosTouchX(motionEvent), getPosTouchY(motionEvent));
-                                    updateTiePos(motionEvent);
+
                                 }
+                                updateTiePos(motionEvent);
                                 break;
                             case MotionEvent.ACTION_UP:
                                 joystickObject.setIsPressed(false);
@@ -171,14 +176,16 @@ public class MainActivity extends AppCompatActivity {
 
 final class Joystick{
     private ImageView joystickImg;
-    private float positionY;
     private boolean isPressed;
     private final float distanceMax;
 
     Joystick(){
-        this.positionY = 0;
         this.isPressed = false;
-        distanceMax = 250;
+        this.distanceMax = 250;
+    }
+
+    public float getDistanceMax() {
+        return distanceMax;
     }
 
     public void setPositionX(float positionX) {
@@ -186,7 +193,6 @@ final class Joystick{
     }
 
     public void setPositionY(float positionY) {
-        this.positionY = positionY;
         joystickImg.setY(positionY);
     }
 
